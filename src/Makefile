@@ -2,25 +2,19 @@ CFLAGS = -std=c11 -Wall -Wextra -g -O2
 CPPFLAGS = -I../include -DDEBUG
 LDFLAGS = -lm
 
-all: takuzu
+all: aes
 
-takuzu: takuzu.o grid.o parser.o heuristics.o
+aes: main.o cypher.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-takuzu.o: takuzu.c
+main.o: main.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $<
 
-grid.o: grid.c ../include/grid.h
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c grid.c
-
-parser.o: parser.c ../include/parser.h
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c parser.c
-
-heuristics.o: heuristics.c ../include/heuristics.h
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c heuristics.c
+cypher.o: cypher.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c cypher.c
 
 clean: 
-	@rm -f *.o takuzu
+	@rm -f *.o aes
 
 help:
 	@echo "Usage: "
@@ -29,4 +23,4 @@ help:
 	@echo "make help\t display this help"
 
 
-.PHONY: all clean help
+.PHONY: all clean help 
