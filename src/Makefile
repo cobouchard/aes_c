@@ -10,7 +10,7 @@ aes: main.o cypher.o
 main.o: main.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $<
 
-cypher.o: cypher.c
+cypher.o: cypher.c ../include/cypher.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c cypher.c
 
 clean: 
