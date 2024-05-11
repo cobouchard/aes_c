@@ -1,9 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../include/cypher.h"
+#include "../include/multiplication.h"
 
 int main(int argc, char* argv[]){
-    printf("Hello world!\n");
+    char a = 0x57;
+    char b = 0x03;
+
+    char c = multiplication(a,b);
+    printf("final result \n");
+    print_char(x_times(0x57));
+    /*printf("Hello world!\n");
 
     union Word_128 mykey;
     for(int i=0; i!=16; i++){
@@ -18,6 +25,6 @@ int main(int argc, char* argv[]){
         }
     }
 
-    free(st);
+    free(st);*/
 }
 
