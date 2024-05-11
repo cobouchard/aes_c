@@ -4,7 +4,7 @@ LDFLAGS = -lm
 
 all: aes
 
-aes: main.o cypher.o
+aes: main.o cypher.o multiplication.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 main.o: main.c
@@ -12,6 +12,8 @@ main.o: main.c
 
 cypher.o: cypher.c ../include/cypher.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c cypher.c
+
+multiplication.o: multiplication.c ../include/multiplication.h
 
 clean: 
 	@rm -f *.o aes

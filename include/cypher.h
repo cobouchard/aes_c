@@ -1,8 +1,9 @@
 #ifndef AES_C_CYPHER_H
 #define AES_C_CYPHER_H
 
-#define first_four_bits(char) ((char >>4) & 0x0F)
-#define last_four_bits(char) (char & 0x0F)
+//return the last/first four bits of a given char
+#define first_four_bits(c) ((c >>4) & 0x0F)
+#define last_four_bits(c) (c & 0x0F)
 
 struct State{
     char matrix[4][4];
@@ -20,7 +21,7 @@ struct State* getState(union Word_128* block);
 void print_word128(union Word_128 word);
 void sub_bytes(struct State* st);
 void shift_rows(struct State* st);
-void mix_columns(struct State* st)
+void mix_columns(struct State* st);
 
 #endif //AES_C_CYPHER_H
 
