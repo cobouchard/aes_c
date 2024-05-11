@@ -15,8 +15,6 @@ char apply_x_times(char b, int n_applications){
         return b;
 
     return apply_x_times(x_times(b),--n_applications);
-
-
 }
 
 /**
@@ -34,6 +32,7 @@ char multiplication(char a, char b){
             product ^= apply_x_times(a,n);
         }
         b=b>>1;
+        n+=1;
     }
 
     return product;

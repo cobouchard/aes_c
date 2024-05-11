@@ -4,12 +4,11 @@
 #include "../include/multiplication.h"
 
 int main(int argc, char* argv[]){
-    char a = 0x57;
-    char b = 0x03;
+    char a = 0x13;
+    char b = 0x57;
 
     char c = multiplication(a,b);
-    printf("final result \n");
-    print_char(x_times(0x57));
+    print_char(c);
     /*printf("Hello world!\n");
 
     union Word_128 mykey;
