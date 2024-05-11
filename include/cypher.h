@@ -20,7 +20,7 @@ struct State* getState(union Word_128* block);
 void print_word128(union Word_128 word);
 void sub_bytes(struct State* st);
 void shift_rows(struct State* st);
-
+void mix_columns(struct State* st)
 
 #endif //AES_C_CYPHER_H
 

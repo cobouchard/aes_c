@@ -54,4 +54,29 @@ void sub_bytes(struct State* st){
         }
     }
 }
+void shift_rows(struct State* st){
+    //the first line of the state is not changed,
+    //each other line are shited in a cycle with an increasing shift
+
+    //line 1
+    char old_val = st->matrix[1][0];
+    st->matrix[1][0] = st->matrix[1][1];
+    st->matrix[1][1] = st->matrix[1][2];
+    st->matrix[1][2] = st->matrix[1][3];
+    st->matrix[1][3] = old_val;
+
+    //line 2
+    old_val = st->matrix[2][1];
+    st->matrix[2][0] = st->matrix[2][2];
+    st->matrix[2][1] = st->matrix[2][3];
+    st->matrix[2][2] = st->matrix[2][0];
+    st->matrix[2][3] = old_val;
+
+    //line 3
+    old_val = st->matrix[3][2];
+    st->matrix[3][0] = st->matrix[3][3];
+    st->matrix[3][1] = st->matrix[3][0];
+    st->matrix[3][2] = st->matrix[3][1];
+    st->matrix[3][3] = old_val;
+}
 
