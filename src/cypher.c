@@ -1,4 +1,5 @@
 #include "../include/cypher.h"
+#include "../include/multiplication.h"
 #include <malloc.h>
 
 const char sbox[] = {0x63,0x7c,0x77,0x7b,0xf2,0x6b,0x6f,0xc5,0x30, 0x1,0x67,0x2b,0xfe,0xd7,0xab,0x76,
@@ -80,3 +81,22 @@ void shift_rows(struct State* st){
     st->matrix[3][3] = old_val;
 }
 
+void mix_columns(struct State* st){
+    char old_val0;
+    char old_val1;
+    char old_val2;
+    char old_val3;
+
+    for(int column=0; column<4; column++){
+        old_val0 = st->matrix[0][column];
+        old_val1 = st->matrix[1][column];
+        old_val2 = st->matrix[2][column];
+        old_val3 = st->matrix[3][column];
+
+        // see page 15 equations (5.8)
+        st->matrix[0][column] = (x_times(old_val0)) ^ (multiplication(old_val1,0x03)) ^ old_val2  ^ old_val3;
+        st->matrix[1][column] = old_val0 ^ (x_times(old_val1)) ^ (multiplication(old_val2, 0x03)) ^ old_val3;
+        st->matrix[2][column] = old_val0 ^ old_val1 ^ (x_times(old_val2)) ^ (multiplication(old_val3, 0x03));
+        st->matrix[3][column] = (multiplication(old_val0, 0x03)) ^ old_val1 ^ old_val2 ^ (x_times(old_val3));
+    }
+}
