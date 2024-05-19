@@ -24,7 +24,7 @@ const char sbox[] = {0x63,0x7c,0x77,0x7b,0xf2,0x6b,0x6f,0xc5,0x30, 0x1,0x67,0x2b
  * @param block
  * @return taking a 128 bit block return a state as described in the nist document
  */
-struct State* getState(union Word_128* block){
+struct State* getState(struct Word_128* block){
     struct State* st = (struct State *)malloc(sizeof(struct State));
 
     for(int i=0; i!=4;i++){
@@ -35,23 +35,53 @@ struct State* getState(union Word_128* block){
     return st;
 }
 
-void print_word128(union Word_128 word){
+void print_word128(struct Word_128 word){
     for(int i=0; i!=16; i++){
         printf("%d,",word.words[i]);
     }
     printf("\n");
+}
+
+void print_word32(struct Word_32 word){
     for(int i=0; i!=4; i++){
-        printf("%d,", word.int_words[i]);
+        print_char(word.c_words[i]);
+        printf("\n");
     }
-    printf("\n%d", sizeof(union Word_128));
+}
+
+/**
+ * used in key_expansion() see page 17 equation (5.10)
+ * @param word
+ */
+void rot_word(struct Word_32* word){
+    char old = word->c_words[0];
+    word->c_words[0] = word->c_words[1];
+    word->c_words[1] = word->c_words[2];
+    word->c_words[2] = word->c_words[3];
+    word->c_words[3] = old;
+}
+
+char get_sbox_value(char c){
+    short x = first_four_bits(c);
+    short y = last_four_bits(c);
+
+    return sbox[x*16+y];
+}
+
+/**
+ * used in key_expansion() see page 17 equation (5.11)
+ * @param word
+ */
+void sub_word(struct Word_32* word){
+    for(int i=0; i!=4; i++){
+        word->c_words[i] = get_sbox_value(word->c_words[i]);
+    }
 }
 
 void sub_bytes(struct State* st){
     for(int i=0; i!=4;i++){
         for(int j=0; j!=4; j++){
-            short x = first_four_bits(st->matrix[i][j]);
-            short y = last_four_bits(st->matrix[i][j]);
-            st->matrix[i][j]=sbox[x*16+y];
+            st->matrix[i][j] = get_sbox_value(st->matrix[i][j]);
         }
     }
 }
