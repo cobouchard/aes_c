@@ -1,28 +1,47 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "../include/cypher.h"
 #include "../include/multiplication.h"
 
-int main(int argc, char* argv[]){
+void print_key_schedule(struct Key_schedule* key_schedule);
 
-    struct Word_32 test;
-    test.c_words[0]=1;
-    test.c_words[1]=4;
-    test.c_words[2]=16;
-    test.c_words[3]=64;
+int main(int argc, char* argv[]){
 
     struct Word_128 block;
     for(int i=0; i!=16; i++){
         block.words[i] = i;
     }
 
-    print_word128(block);
-    struct State* st = getState(block);
+    struct Round_Key key;
 
-    struct Word_128 block2;
-    printf("\n");
-    block2 = revert_block(st);
-    print_word128(block2);
+    char temp[16] = default_key;
 
+    for(int i=0; i!=4; i++) {
+        for(int j=0; j!=4; j++) {
+            key.words[i].c_words[j] = temp[i*4+j];
+        }
+    }
+
+
+    struct Key_schedule* schedule = (struct Key_schedule*)malloc(sizeof(struct Key_schedule));
+    key_expansion(key,schedule);
+    print_key_schedule(schedule);
+
+    free(schedule);
 }
 
+
+void print_key_schedule(struct Key_schedule* key_schedule) {
+    printf("Key Schedule:\n");
+    for (int i = 0; i < 11; ++i) {
+        printf("Round %d:\n", i);
+        for (int j = 0; j < 4; ++j) {
+            printf("    Word %d: ", j);
+            for (int k = 0; k < 4; ++k) {
+                printf("%02X ", (unsigned char)key_schedule->round_keys[i].words[j].c_words[k]);
+            }
+            printf("\n");
+        }
+    }
+}

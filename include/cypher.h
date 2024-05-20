@@ -5,6 +5,10 @@
 #define first_four_bits(c) ((c >>4) & 0x0F)
 #define last_four_bits(c) (c & 0x0F)
 
+//#define default_key {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f}
+#define default_key {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c}
+
+
 struct State{
     char matrix[4][4];
 };
@@ -32,9 +36,9 @@ extern const struct Word_32 Rcon[];
 
 struct State* getState(struct Word_128 block);
 struct Word_128 revert_block(struct State* st);
-
 void print_word128(struct Word_128 word);
 void print_word32(struct Word_32 word);
+void print_word32_hexa(struct Word_32 word);
 struct Word_32 xor_words32(struct Word_32 w1, struct Word_32 w2);
 void rot_word(struct Word_32* word);
 void sub_word(struct Word_32* word);

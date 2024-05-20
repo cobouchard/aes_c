@@ -94,6 +94,13 @@ void print_word32(struct Word_32 word){
     }
 }
 
+void print_word32_hexa(struct Word_32 word) {
+    for (int i = 0; i < 4; i++) {
+        printf("%02X ", (unsigned char)word.c_words[i]);
+    }
+    printf("\n");
+}
+
 struct Word_32 xor_words32(struct Word_32 w1, struct Word_32 w2){
     struct Word_32 result;
     for(int i=0; i!=4; i++){
@@ -209,11 +216,14 @@ void key_expansion(struct Round_Key key, struct Key_schedule* result){
         //we take the last word
         struct Word_32 temp = result->round_keys[(i-1)/4].words[(i-1)%4];
 
+        printf("temp=%02X %02X %02X %02X", (unsigned char)temp.c_words[0], (unsigned char)temp.c_words[1], (unsigned char)temp.c_words[2], (unsigned char)temp.c_words[3]);
+        printf("\n");
+
         if(i%4==0){
             struct Word_32 left_side_xor = temp;
             rot_word(&left_side_xor);
             sub_word(&left_side_xor);
-            temp = xor_words32(left_side_xor, Rcon[i/4]);
+            temp = xor_words32(left_side_xor, Rcon[i/4-1]);
         }
 
         result->round_keys[i/4].words[i%4] = xor_words32(result->round_keys[(i-4)/4].words[i%4] , temp);
