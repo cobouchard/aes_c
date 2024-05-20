@@ -8,26 +8,38 @@ void print_key_schedule(struct Key_schedule* key_schedule);
 
 int main(int argc, char* argv[]){
 
-    struct Word_128 block;
-    for(int i=0; i!=16; i++){
-        block.words[i] = i;
-    }
-
+    //defining the key
     struct Round_Key key;
-
     char temp[16] = default_key;
-
     for(int i=0; i!=4; i++) {
         for(int j=0; j!=4; j++) {
             key.words[i].c_words[j] = temp[i*4+j];
         }
     }
 
+    //defining the input and state
+    struct State* st;
+    struct Word_128 block;
+    char temp2[16] = default_input;
+    memcpy(block.words, temp2, sizeof(temp2));
+    st=getState(block);
 
+    print_state_hexa(st);
+    printf("\n");
+
+    //calculating round keys
     struct Key_schedule* schedule = (struct Key_schedule*)malloc(sizeof(struct Key_schedule));
     key_expansion(key,schedule);
-    print_key_schedule(schedule);
+    //print_key_schedule(schedule);
 
+    //cipher the block and revert to word
+    cipher(st,schedule);
+    block = revert_block(st);
+
+    //print the result
+    print_word128_hexa(block);
+
+    free(st);
     free(schedule);
 }
 

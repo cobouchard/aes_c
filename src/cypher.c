@@ -101,6 +101,28 @@ void print_word32_hexa(struct Word_32 word) {
     printf("\n");
 }
 
+void print_word128_hexa(struct Word_128 word) {
+    for (int i = 0; i < 16; i++) {
+        printf("%02X ", (unsigned char)word.words[i]);
+    }
+    printf("\n");
+}
+
+void print_state_hexa(struct State* st){
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            printf("%02X ", (unsigned char)st->matrix[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+void print_round_key_hexa(struct Round_Key foobar){
+    for(int i=0; i!=4; i++){
+        print_word32_hexa(foobar.words[i]);
+    }
+}
+
 struct Word_32 xor_words32(struct Word_32 w1, struct Word_32 w2){
     struct Word_32 result;
     for(int i=0; i!=4; i++){
@@ -165,36 +187,34 @@ void shift_rows(struct State* st){
 
     //line 2
     old_val = st->matrix[2][1];
+    char old_val2 = st->matrix[2][0];
     st->matrix[2][0] = st->matrix[2][2];
     st->matrix[2][1] = st->matrix[2][3];
-    st->matrix[2][2] = st->matrix[2][0];
+    st->matrix[2][2] = old_val2;
     st->matrix[2][3] = old_val;
 
     //line 3
-    old_val = st->matrix[3][2];
-    st->matrix[3][0] = st->matrix[3][3];
-    st->matrix[3][1] = st->matrix[3][0];
+    old_val = st->matrix[3][3];
+    st->matrix[3][3] = st->matrix[3][2];
     st->matrix[3][2] = st->matrix[3][1];
-    st->matrix[3][3] = old_val;
+    st->matrix[3][1] = st->matrix[3][0];
+    st->matrix[3][0] = old_val;
 }
 
 void mix_columns(struct State* st){
-    char old_val0;
-    char old_val1;
-    char old_val2;
-    char old_val3;
-
     for(int column=0; column<4; column++){
-        old_val0 = st->matrix[0][column];
-        old_val1 = st->matrix[1][column];
-        old_val2 = st->matrix[2][column];
-        old_val3 = st->matrix[3][column];
+        char old_val0 = st->matrix[0][column];
+        char old_val1 = st->matrix[1][column];
+        char old_val2 = st->matrix[2][column];
+        char old_val3 = st->matrix[3][column];
+
 
         // see page 15 equations (5.8)
         st->matrix[0][column] = (x_times(old_val0)) ^ (multiplication(old_val1,0x03)) ^ old_val2  ^ old_val3;
         st->matrix[1][column] = old_val0 ^ (x_times(old_val1)) ^ (multiplication(old_val2, 0x03)) ^ old_val3;
         st->matrix[2][column] = old_val0 ^ old_val1 ^ (x_times(old_val2)) ^ (multiplication(old_val3, 0x03));
         st->matrix[3][column] = (multiplication(old_val0, 0x03)) ^ old_val1 ^ old_val2 ^ (x_times(old_val3));
+
     }
 }
 
@@ -216,9 +236,6 @@ void key_expansion(struct Round_Key key, struct Key_schedule* result){
         //we take the last word
         struct Word_32 temp = result->round_keys[(i-1)/4].words[(i-1)%4];
 
-        printf("temp=%02X %02X %02X %02X", (unsigned char)temp.c_words[0], (unsigned char)temp.c_words[1], (unsigned char)temp.c_words[2], (unsigned char)temp.c_words[3]);
-        printf("\n");
-
         if(i%4==0){
             struct Word_32 left_side_xor = temp;
             rot_word(&left_side_xor);
@@ -234,7 +251,7 @@ void add_round_key(struct State* st, struct Round_Key key){
     for(int i=0; i!=4; i++){
         struct Word_32 temp = key.words[i];
         for(int j=0; j!=4; j++){
-            st->matrix[i][j] = st->matrix[i][j] ^ temp.c_words[j];
+            st->matrix[j][i] = st->matrix[j][i] ^ temp.c_words[j];
         }
     }
 }
@@ -316,6 +333,8 @@ void cipher(struct State* st, struct Key_schedule* schedule){
         sub_bytes(st);
         shift_rows(st);
         mix_columns(st);
+        if(round==1)
+            print_state_hexa(st);
         add_round_key(st, schedule->round_keys[round]);
     }
 
