@@ -13,7 +13,7 @@ int main(int argc, char* argv[]){
         }
     }
 
-    mode_ecb("alice.sage", "output.txt", key, CIPHER);
+    mode_ecb("alice.sage", 0, key, CIPHER);
 
     //defining the input and state
 //    struct State* st;

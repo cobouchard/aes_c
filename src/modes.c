@@ -12,7 +12,7 @@
 void mode_ecb(char* input_path, char* output_path, struct Round_Key key, Mode mode){
     if(output_path==0)
         output_path = "output.txt";
-    
+
     if(input_path==0)
         input_path = "alice.sage";
 
