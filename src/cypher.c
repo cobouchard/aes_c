@@ -1,6 +1,8 @@
 #include "../include/cypher.h"
 #include "../include/multiplication.h"
 #include <malloc.h>
+#include <err.h>
+#include <stdlib.h>
 
 const char sbox[] = {0x63,0x7c,0x77,0x7b,0xf2,0x6b,0x6f,0xc5,0x30, 0x1,0x67,0x2b,0xfe,0xd7,0xab,0x76,
 0xca,0x82,0xc9,0x7d,0xfa,0x59,0x47,0xf0,0xad,0xd4,0xa2,0xaf,0x9c,0xa4,0x72,0xc0,
@@ -18,6 +20,19 @@ const char sbox[] = {0x63,0x7c,0x77,0x7b,0xf2,0x6b,0x6f,0xc5,0x30, 0x1,0x67,0x2b
 0x70,0x3e,0xb5,0x66,0x48, 0x3,0xf6, 0xe,0x61,0x35,0x57,0xb9,0x86,0xc1,0x1d,0x9e,
 0xe1,0xf8,0x98,0x11,0x69,0xd9,0x8e,0x94,0x9b,0x1e,0x87,0xe9,0xce,0x55,0x28,0xdf,
 0x8c,0xa1,0x89, 0xd,0xbf,0xe6,0x42,0x68,0x41,0x99,0x2d, 0xf,0xb0,0x54,0xbb,0x16};
+
+const struct Word_32 Rcon[] = {
+        {{0x01, 0x00, 0x00, 0x00}},
+        {{0x02, 0x00, 0x00, 0x00}},
+        {{0x04, 0x00, 0x00, 0x00}},
+        {{0x08, 0x00, 0x00, 0x00}},
+        {{0x10, 0x00, 0x00, 0x00}},
+        {{0x20, 0x00, 0x00, 0x00}},
+        {{0x40, 0x00, 0x00, 0x00}},
+        {{0x80, 0x00, 0x00, 0x00}},
+        {{0x1b, 0x00, 0x00, 0x00}},
+        {{0x36, 0x00, 0x00, 0x00}}
+};
 
 /**
  * this function allocate a new State
@@ -47,6 +62,14 @@ void print_word32(struct Word_32 word){
         print_char(word.c_words[i]);
         printf("\n");
     }
+}
+
+struct Word_32 xor_words32(struct Word_32 w1, struct Word_32 w2){
+    struct Word_32 result;
+    for(int i=0; i!=4; i++){
+        result.c_words[i] = w1.c_words[i] ^ w2.c_words[i];
+    }
+    return result;
 }
 
 /**
@@ -130,3 +153,43 @@ void mix_columns(struct State* st){
         st->matrix[3][column] = (multiplication(old_val0, 0x03)) ^ old_val1 ^ old_val2 ^ (x_times(old_val3));
     }
 }
+
+/**
+ * generate 4*(10+1) round keys (words)
+ * for aes 128, Nr=10, Nb=Nk=4 (128 bits), a word is a sequence of 4 bytes
+ * @param key
+ * @param result
+ */
+void key_expansion(struct Round_Key key, struct Key_schedule* result){
+    int i = 0;
+    if(!result){
+        errx(EXIT_FAILURE, "result struct to holds round_keys is not allocated\n");
+    }
+
+    // the first round key is the key itself
+    result->round_keys[0] = key;
+
+    for(int i=4; i<=43; i++){ //4*Nr+3
+        //we take the last word
+        struct Word_32 temp = result->round_keys[(i-1)/4].words[(i-1)%4];
+
+        if(i%4==0){
+            struct Word_32 left_side_xor = temp;
+            rot_word(&left_side_xor);
+            sub_word(&left_side_xor);
+            temp = xor_words32(left_side_xor, Rcon[i/4]);
+        }
+
+        result->round_keys[i/4].words[i%4] = xor_words32(result->round_keys[(i-4)/4].words[i%4] , temp);
+    }
+}
+
+void add_round_key(struct State* st, struct Round_Key key){
+    for(int i=0; i!=4; i++){
+        struct Word_32 temp = key.words[i];
+        for(int j=0; j!=4; j++){
+            st->matrix[i][j] = st->matrix[i][j] ^ temp.c_words[j];
+        }
+    }
+}
+
