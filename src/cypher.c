@@ -268,9 +268,10 @@ void inv_shift_rows(struct State* st){
 
     //line 3
     old_value = st->matrix[2][1];
+    char old_value2 = st->matrix[2][0];
     st->matrix[2][0] = st->matrix[2][2];
     st->matrix[2][1] = st->matrix[2][3];
-    st->matrix[2][2] = st->matrix[2][0];
+    st->matrix[2][2] = old_value2;
     st->matrix[2][3] = old_value;
 
     //line 4
@@ -333,8 +334,6 @@ void cipher(struct State* st, struct Key_schedule* schedule){
         sub_bytes(st);
         shift_rows(st);
         mix_columns(st);
-        if(round==1)
-            print_state_hexa(st);
         add_round_key(st, schedule->round_keys[round]);
     }
 
@@ -344,12 +343,16 @@ void cipher(struct State* st, struct Key_schedule* schedule){
 }
 
 void inv_cipher(struct State* st, struct Key_schedule* schedule){
+    print_state_hexa(st);
+    printf("\n");
     add_round_key(st, schedule->round_keys[10]);
-    for(int round=9; round!=1; round--){
+    for(int round=9; round!=0; round--){
         inv_shift_rows(st);
         inv_sub_bytes(st);
         add_round_key(st,schedule->round_keys[round]);
         inv_mix_columns(st);
+        print_state_hexa(st);
+        printf("\n");
     }
 
     inv_shift_rows(st);

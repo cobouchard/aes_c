@@ -24,8 +24,7 @@ int main(int argc, char* argv[]){
     memcpy(block.words, temp2, sizeof(temp2));
     st=getState(block);
 
-    print_state_hexa(st);
-    printf("\n");
+
 
     //calculating round keys
     struct Key_schedule* schedule = (struct Key_schedule*)malloc(sizeof(struct Key_schedule));
@@ -34,6 +33,8 @@ int main(int argc, char* argv[]){
 
     //cipher the block and revert to word
     cipher(st,schedule);
+    inv_cipher(st,schedule);
+
     block = revert_block(st);
 
     //print the result
