@@ -58,6 +58,9 @@ const struct Word_32 Rcon[] = {
  */
 struct State* getState(struct Word_128 block){
     struct State* st = (struct State *)malloc(sizeof(struct State));
+    if(st==NULL){
+        err(EXIT_FAILURE, "Failed allocation of state in getState()\n");
+    }
 
     for(int i=0; i!=4;i++){
         for(int j=0; j!=4; j++){
@@ -351,8 +354,6 @@ void inv_cipher(struct State* st, struct Key_schedule* schedule){
         inv_sub_bytes(st);
         add_round_key(st,schedule->round_keys[round]);
         inv_mix_columns(st);
-        print_state_hexa(st);
-        printf("\n");
     }
 
     inv_shift_rows(st);
