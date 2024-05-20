@@ -198,7 +198,6 @@ void mix_columns(struct State* st){
  * @param result
  */
 void key_expansion(struct Round_Key key, struct Key_schedule* result){
-    int i = 0;
     if(!result){
         errx(EXIT_FAILURE, "result struct to holds round_keys is not allocated\n");
     }
