@@ -1,4 +1,4 @@
-CFLAGS = -std=c11 -Wall -Wextra -g -O2
+CFLAGS = -std=c11 -Wall -Wextra -g -O3
 CPPFLAGS = -I../include -DDEBUG
 LDFLAGS = -lm
 

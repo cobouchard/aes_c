@@ -61,6 +61,10 @@ void mode_ecb(char* input_path, char* output_path, struct Round_Key key, Mode mo
     free(schedule);
 }
 
+void mode_gcm(char* input_file, char* output_file, struct Round_Key key, Mode mode){
+    printf("Unimplemented\n");
+}
+
 void write_block(struct State* st, struct Word_128 block, struct Key_schedule* schedule, FILE* outputFile, Mode mode){
     struct Word_128 output_block;
 

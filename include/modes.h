@@ -11,6 +11,8 @@ typedef enum {
 
 void mode_ecb(char* input_file, char* output_file, struct Round_Key key, Mode mode);
 
+void mode_gcm(char* input_file, char* output_file, struct Round_Key key, Mode mode);
+
 void write_block(struct State* st, struct Word_128 block, struct Key_schedule* schedule, FILE* outputFile, Mode mode);
 
 #endif
