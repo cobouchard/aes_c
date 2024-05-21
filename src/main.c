@@ -35,6 +35,7 @@ int main(int argc, char* argv[]){
             case 'g':
                 printf("Cipher using GCM mode and AES-128, \"alice.sage\" by default, output will be written in output.txt\n");
                 parameters.gcm=1;
+                break;
             case 'd':
                 printf("Deciphering\n");
                 parameters.cipher=DECIPHER;
@@ -45,7 +46,7 @@ int main(int argc, char* argv[]){
     //reading key as first input
     parameters.input_key = argv[optind];
     optind++;
-    if(parameters.input_key==NULL || parameters.input_key=='0'){
+    if(parameters.input_key==NULL || strcmp(parameters.input_key,"none")==0){
         printf("No key given, default key will be used\n");
         char temp[16] = default_key;
         for(int i=0; i!=4; i++) {
@@ -54,29 +55,32 @@ int main(int argc, char* argv[]){
             }
         }
     }
-
     else{
         FILE* input_file;
-        input_file = fopen(parameters.input_key, "r");
+        input_file = fopen(parameters.input_key, "rb");
 
         if(input_file==NULL)
             errx(EXIT_FAILURE, "Couldn't open %s to read input key\n", parameters.input_key);
 
-        //read_key(input_file);
-        free(input_file);
+
+        read_key(input_file, &key);
+
+        //checking second input for document to cipher/decipher, if none using alice.sage
+        parameters.input_file = argv[optind];
+        if(parameters.input_file==NULL)
+            printf("No document given to cipher, using \"alice.sage\" \n");
+
+        else{
+            input_file = fopen(parameters.input_file, "r");
+            if(input_file==NULL)
+                errx(EXIT_FAILURE, "Couldn't open %s to read input document\n", parameters.input_file);
+
+            printf("Ciphering %s \n", parameters.input_file);
+            fclose(input_file);
+        }
     }
 
-    //checking second input for document to cipher/decipher, if none using alice.sage
-    parameters.input_file = argv[optind];
-    if(parameters.input_file==NULL)
-        printf("No document given to cipher, using \"alice.sage\" \n");
-    else{
-        FILE* input_file;
-        input_file = fopen(parameters.input_file, "r");
 
-        if(input_file==NULL)
-            errx(EXIT_FAILURE, "Couldn't open %s to read input document\n", parameters.input_file);
-    }
 
     if(parameters.gcm){
         mode_gcm(parameters.input_file, "output.txt", key, parameters.cipher);
@@ -86,10 +90,27 @@ int main(int argc, char* argv[]){
     }
 
 
+}
 
+/**
+ * reading a file to import a key to cipher
+ * @param filename path to file
+ * @param key result will be written here
+ */
+void read_key(FILE* file, struct Round_Key *key) {
+    for (int i = 0; i < 4; ++i) {
+        size_t read_count = fread(key->words[i].c_words, sizeof(char), 4, file);
+        if (read_count != 4) {
+            if (feof(file)) {
+                fprintf(stderr, "Unexpected end of file.\n");
+            } else {
+                perror("Failed to read data");
+            }
+            fclose(file);
+            exit(EXIT_FAILURE);
+        }
+    }
 
-
-
-    //
+    fclose(file);
 }
 

@@ -9,4 +9,6 @@ struct Params {
     Mode cipher;
 };
 
+void read_key(FILE* file, struct Round_Key *key);
+
 #endif 
