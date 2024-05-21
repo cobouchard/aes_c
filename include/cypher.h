@@ -35,6 +35,8 @@ extern const struct Word_32 Rcon[];
 struct State* getState(struct Word_128 block);
 struct Word_128 revert_block(struct State* st);
 
+
+
 struct Word_32 xor_words32(struct Word_32 w1, struct Word_32 w2);
 void rot_word(struct Word_32* word);
 void sub_word(struct Word_32* word);

@@ -21,16 +21,26 @@ int main(int argc, char* argv[]){
     static struct option long_options[]= {
             {"gcm", no_argument, 0, 'g'},
             {"help", no_argument, 0, 'h'},
-            {"decipher", no_argument, 0, 'd'}
+            {"decipher", no_argument, 0, 'd'},
+            {"test", no_argument, 0, 't'}
     };
 
     int c;
     int option_index=0;
     do{
-        c= getopt_long(argc, argv, "hgd", long_options, &option_index);
+        c= getopt_long(argc, argv, "hgdt", long_options, &option_index);
         switch (c) {
             case 'h':
                 printf("Here is the help to execute the program \n");
+                exit(EXIT_SUCCESS);
+            case 't':
+                char temp[16] = default_key;
+                for(int i=0; i!=4; i++) {
+                    for(int j=0; j!=4; j++) {
+                        key.words[i].c_words[j] = temp[i*4+j];
+                    }
+                }
+                mode_ecb(parameters.input_file, "output.txt", key, parameters.cipher);
                 exit(EXIT_SUCCESS);
             case 'g':
                 printf("Cipher using GCM mode and AES-128, \"alice.sage\" by default, output will be written in output.txt\n");

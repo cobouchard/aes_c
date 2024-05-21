@@ -2,5 +2,5 @@
 
 for i in {1..100}
 do
-    ./aes
+    ./aes -t
 done
