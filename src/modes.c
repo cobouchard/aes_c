@@ -36,8 +36,6 @@ void mode_ecb(char* input_path, char* output_path, struct Round_Key key, Mode mo
 
     struct State* st;
     struct Word_128 block;
-    char c;
-    int current_index=0;
     size_t bytesRead;
     uint8_t buffer[16];
 

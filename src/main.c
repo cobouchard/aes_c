@@ -32,7 +32,9 @@ int main(int argc, char* argv[]){
         c= getopt_long(argc, argv, "hgdtk:", long_options, &option_index);
         switch (c) {
             case 'h':
-                printf("Here is the help to execute the program \n");
+                printf("-k {key-path} \t to cipher the content of the file\n");
+                printf("-d \t to decipher instead of ciphering\n");
+                printf("-h \t to print this help\n");
                 exit(EXIT_SUCCESS);
 
             case 't':
@@ -98,15 +100,17 @@ int main(int argc, char* argv[]){
         }
     }
 
-
+    char* output_file="cipher.txt";
+    if(parameters.cipher==DECIPHER)
+        output_file="decipher.txt";
     if(parameters.gcm){
-        mode_gcm(parameters.input_file, "output.txt", key, parameters.cipher);
+        mode_gcm(parameters.input_file, output_file, key, parameters.cipher);
     }
     else if(parameters.ecb){
-        mode_ecb(parameters.input_file, "output.txt", key, parameters.cipher);
+        mode_ecb(parameters.input_file, output_file, key, parameters.cipher);
     }
 
-    printf("Output written in \"output.txt\"\n");
+    printf("Output written in \"%s\"\n", output_file);
 }
 
 /**
