@@ -350,7 +350,6 @@ void cipher(struct State* st, struct Key_schedule* schedule){
 }
 
 void inv_cipher(struct State* st, struct Key_schedule* schedule){
-    printf("\n");
     add_round_key(st, schedule->round_keys[10]);
     for(int round=9; round!=0; round--){
         inv_shift_rows(st);

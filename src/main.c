@@ -22,17 +22,19 @@ int main(int argc, char* argv[]){
             {"gcm", no_argument, 0, 'g'},
             {"help", no_argument, 0, 'h'},
             {"decipher", no_argument, 0, 'd'},
-            {"test", no_argument, 0, 't'}
+            {"test", no_argument, 0, 't'},
+            {"key", required_argument,0, 'k'}
     };
 
     int c;
     int option_index=0;
     do{
-        c= getopt_long(argc, argv, "hgdt", long_options, &option_index);
+        c= getopt_long(argc, argv, "hgdtk:", long_options, &option_index);
         switch (c) {
             case 'h':
                 printf("Here is the help to execute the program \n");
                 exit(EXIT_SUCCESS);
+
             case 't':
                 char temp[16] = default_key;
                 for(int i=0; i!=4; i++) {
@@ -42,6 +44,7 @@ int main(int argc, char* argv[]){
                 }
                 mode_ecb(parameters.input_file, "output.txt", key, parameters.cipher);
                 exit(EXIT_SUCCESS);
+
             case 'g':
                 printf("Cipher using GCM mode and AES-128, \"alice.sage\" by default, output will be written in output.txt\n");
                 parameters.gcm=1;
@@ -49,14 +52,19 @@ int main(int argc, char* argv[]){
             case 'd':
                 printf("Deciphering\n");
                 parameters.cipher=DECIPHER;
+                break;
+
+            case 'k':
+                parameters.input_key = optarg;
+                printf("Using %s as key\n", parameters.input_key);
         }
 
     }while(c != -1);
 
     //reading key as first input
-    parameters.input_key = argv[optind];
+    parameters.input_file = argv[optind];
     optind++;
-    if(parameters.input_key==NULL || strcmp(parameters.input_key,"none")==0){
+    if(parameters.input_key==NULL){
         printf("No key given, default key will be used\n");
         char temp[16] = default_key;
         for(int i=0; i!=4; i++) {
@@ -65,6 +73,7 @@ int main(int argc, char* argv[]){
             }
         }
     }
+
     else{
         FILE* input_file;
         input_file = fopen(parameters.input_key, "rb");
@@ -76,12 +85,11 @@ int main(int argc, char* argv[]){
         read_key(input_file, &key);
 
         //checking second input for document to cipher/decipher, if none using alice.sage
-        parameters.input_file = argv[optind];
         if(parameters.input_file==NULL)
-            printf("No document given to cipher, using \"alice.sage\" \n");
+            printf("No document given to cipher, ciphering \"alice.sage\" \n");
 
         else{
-            input_file = fopen(parameters.input_file, "r");
+            input_file = fopen(parameters.input_file, "rb");
             if(input_file==NULL)
                 errx(EXIT_FAILURE, "Couldn't open %s to read input document\n", parameters.input_file);
 
@@ -91,7 +99,6 @@ int main(int argc, char* argv[]){
     }
 
 
-
     if(parameters.gcm){
         mode_gcm(parameters.input_file, "output.txt", key, parameters.cipher);
     }
@@ -99,7 +106,7 @@ int main(int argc, char* argv[]){
         mode_ecb(parameters.input_file, "output.txt", key, parameters.cipher);
     }
 
-
+    printf("Output written in \"output.txt\"\n");
 }
 
 /**

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <err.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include "../include/modes.h"
 
 /**
@@ -17,11 +18,11 @@ void mode_ecb(char* input_path, char* output_path, struct Round_Key key, Mode mo
         input_path = "alice.sage";
 
     FILE *inputFile, *outputFile;
-    inputFile = fopen(input_path, "r");
+    inputFile = fopen(input_path, "rb");
     if(inputFile == NULL){
         errx(EXIT_FAILURE,"Cannot open %s input file\n", input_path);
     }
-    outputFile = fopen(output_path, "w");
+    outputFile = fopen(output_path, "wb");
     if(outputFile == NULL){
         fclose(inputFile);
         errx(EXIT_FAILURE, "Cannot open file for writing result\n");
@@ -37,24 +38,23 @@ void mode_ecb(char* input_path, char* output_path, struct Round_Key key, Mode mo
     struct Word_128 block;
     char c;
     int current_index=0;
+    size_t bytesRead;
+    uint8_t buffer[16];
 
-    while ((c = fgetc(inputFile)) != EOF) {
-        block.words[current_index] = c;
-        current_index = (current_index+1)%16;
-        if(current_index==0){
-            //we have a complete block, we can cipher it
-            write_block(st, block, schedule, outputFile, mode);
+    while ((bytesRead = fread(buffer, 1, 16, inputFile)) > 0) {
+        for (int i = 0; i < bytesRead; i++) {
+            block.words[i] = buffer[i];
         }
-    }
-    //if the last block was not full, we add 0 to cipher the last block
-    if(current_index!=0){
-        for(;current_index!=16;current_index++){
-            block.words[current_index]=0;
+
+        if (bytesRead < 16) {
+            // Pad the remaining block with zeros
+            for (int i = bytesRead; i < 16; i++) {
+                block.words[i] = 0;
+            }
         }
+
         write_block(st, block, schedule, outputFile, mode);
     }
-
-
 
     fclose(inputFile);
     fclose(outputFile);

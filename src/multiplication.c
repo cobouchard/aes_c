@@ -12,7 +12,7 @@ char x_times(char b){
 
 /**
  * multiplying by {02} in GF(2^8) (n_applications) times
- * @param b 
+ * @param b
  * @param n_applications
  * @return
  */
