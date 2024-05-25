@@ -10,6 +10,12 @@ char x_times(char b){
     return (b>>7) ? (b<<1 ^ XTIMES_XOR_VALUE) : (b<<1);
 }
 
+/**
+ * multiplying by {02} in GF(2^8) (n_applications) times
+ * @param b 
+ * @param n_applications
+ * @return
+ */
 char apply_x_times(char b, int n_applications){
     if(n_applications==0)
         return b;

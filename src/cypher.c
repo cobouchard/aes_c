@@ -70,6 +70,11 @@ struct State* getState(struct Word_128 block){
     return st;
 }
 
+/**
+ * convert the state back into a block to read
+ * @param st
+ * @return
+ */
 struct Word_128 revert_block(struct State* st){
     struct Word_128 block;
 
@@ -78,7 +83,6 @@ struct Word_128 revert_block(struct State* st){
             block.words[i+4*j] = st->matrix[i][j];
         }
     }
-
 
     return block;
 }
