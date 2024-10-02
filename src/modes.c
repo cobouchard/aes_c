@@ -15,7 +15,7 @@ void mode_ecb(char* input_path, char* output_path, struct Round_Key key, Mode mo
         output_path = "output.txt";
 
     if(input_path==0)
-        input_path = "alice.sage";
+        input_path = "alice.txt";
 
     FILE *inputFile, *outputFile;
     inputFile = fopen(input_path, "rb");
