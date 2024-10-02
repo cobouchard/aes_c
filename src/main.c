@@ -9,7 +9,7 @@
 struct Params parameters = {
         .ecb = 1,
         .gcm = 0,
-        .input_file = "alice.sage",
+        .input_file = "alice.txt",
         .cipher = CIPHER,
         .input_key = NULL
 };
